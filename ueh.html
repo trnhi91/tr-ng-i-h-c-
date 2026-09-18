@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tính điểm xét tuyển đại học</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh;padding:2rem 1rem}
+.wrap{max-width:680px;margin:0 auto}
+h1{font-size:22px;font-weight:500;color:#1a1a1a;margin-bottom:4px}
+.sub{font-size:13px;color:#666;margin-bottom:1.5rem}
+.tabs{display:flex;gap:8px;margin-bottom:1.5rem}
+.tab{padding:8px 16px;border-radius:8px;border:0.5px solid #ddd;background:transparent;font-size:14px;cursor:pointer;color:#666;transition:all 0.15s}
+.tab.active{background:#e8f0fb;color:#1a56db;border-color:transparent;font-weight:500}
+.section{background:#fff;border:0.5px solid #e0e0e0;border-radius:12px;padding:1.25rem;margin-bottom:1rem}
+.section-title{font-size:13px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:1rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.row.three{grid-template-columns:1fr 1fr 1fr}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-size:13px;color:#555}
+input[type=number]{width:100%;padding:8px 10px;border-radius:8px;border:0.5px solid #ddd;background:#f8f8f5;color:#1a1a1a;font-size:14px}
+input[type=number]:focus{outline:none;border-color:#999;background:#fff}
+.note{font-size:12px;color:#aaa;margin-top:2px}
+.result-card{background:#e8f0fb;border-radius:12px;padding:1.5rem;text-align:center;margin-top:1.25rem}
+.result-label{font-size:13px;color:#1a56db;margin-bottom:6px}
+.result-score{font-size:42px;font-weight:500;color:#1a56db;line-height:1}
+.result-max{font-size:14px;color:#1a56db;margin-top:4px;opacity:0.7}
+.breakdown{margin-top:1rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.bk-item{background:#fff;border-radius:8px;padding:10px;text-align:center}
+.bk-val{font-size:16px;font-weight:500;color:#1a1a1a}
+.bk-lbl{font-size:11px;color:#888;margin-top:2px}
+.calc-btn{width:100%;padding:10px;margin-top:1rem;border-radius:8px;border:0.5px solid #ccc;background:#fff;font-size:14px;font-weight:500;cursor:pointer;color:#1a1a1a;transition:all 0.15s}
+.calc-btn:hover{background:#f0f0ec}
+.err{font-size:12px;color:#c0392b;margin-top:6px;min-height:16px}
+.hidden{display:none}
+.formula-box{background:#f8f8f5;border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;color:#555;margin-bottom:1rem;border-left:2px solid #1a56db}
+.formula-box strong{color:#1a56db;font-weight:500}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Tính điểm xét tuyển đại học</h1>
+  <p class="sub">Phương thức 2 – Xét tuyển tích hợp (thang điểm 100)</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('vn')">Tốt nghiệp THPT Việt Nam</button>
+    <button class="tab" onclick="switchTab('nn')">Tốt nghiệp nước ngoài</button>
+  </div>
+
+  <div id="tab-vn">
+    <div class="formula-box">
+      <strong>Điểm xét tuyển</strong> = Điểm thi × 60% + ĐTB các năm THPT × 40% + Điểm cộng + Điểm ưu tiên KV, ĐT
+    </div>
+
+    <div class="section">
+      <div class="section-title">Điểm thi (chọn kỳ thi cao nhất)</div>
+      <div class="row three">
+        <div class="field">
+          <label>Thi THPT 2026</label>
+          <input type="number" id="thpt" min="0" max="30" step="0.01" placeholder="0–30">
+          <div class="note">Tổng 3 môn tổ hợp</div>
+        </div>
+        <div class="field">
+          <label>ĐGNL ĐHQG HCM</label>
+          <input type="number" id="dgnl" min="0" max="1200" step="1" placeholder="0–1200">
+          <div class="note">Điểm gốc</div>
+        </div>
+        <div class="field">
+          <label>V-SAT (Cần Thơ)</label>
+          <input type="number" id="vsat" min="0" max="100" step="0.01" placeholder="0–100">
+          <div class="note">Mã KSV</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Điểm trung bình các năm học THPT</div>
+      <div class="row three">
+        <div class="field">
+          <label>ĐTB lớp 10</label>
+          <input type="number" id="dtb10" min="0" max="10" step="0.01" placeholder="0–10">
+        </div>
+        <div class="field">
+          <label>ĐTB lớp 11</label>
+          <input type="number" id="dtb11" min="0" max="10" step="0.01" placeholder="0–10">
+        </div>
+        <div class="field">
+          <label>ĐTB lớp 12</label>
+          <input type="number" id="dtb12" min="0" max="10" step="0.01" placeholder="0–10">
+        </div>
+      </div>
+      <div class="note" style="margin-top:4px">ĐTB THPT = (ĐTB lớp 10 × 1 + ĐTB lớp 11 × 2 + ĐTB lớp 12 × 3) / 6</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Điểm cộng & ưu tiên (nếu có)</div>
+      <div class="row">
+        <div class="field">
+          <label>Điểm cộng</label>
+          <input type="number" id="bonus" min="0" max="10" step="0.01" placeholder="0">
+          <div class="note">Xét tuyển thẳng không dùng quyền, giải thưởng...</div>
+        </div>
+        <div class="field">
+          <label>Điểm ưu tiên KV, ĐT</label>
+          <input type="number" id="priority" min="0" max="5" step="0.25" placeholder="0">
+          <div class="note">KV1: 0.75 | KV2-NT: 0.5 | KV2: 0.25 | KV3: 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="err-vn" class="err"></div>
+    <button class="calc-btn" onclick="calcVN()">Tính điểm xét tuyển</button>
+  </div>
+
+  <div id="tab-nn" class="hidden">
+    <div class="formula-box">
+      <strong>Điểm xét tuyển</strong> = ĐTB các năm học THPT + Điểm cộng + Điểm ưu tiên KV, ĐT
+    </div>
+
+    <div class="section">
+      <div class="section-title">Điểm trung bình các năm học THPT</div>
+      <div class="row three">
+        <div class="field">
+          <label>ĐTB lớp 10</label>
+          <input type="number" id="nn-dtb10" min="0" max="10" step="0.01" placeholder="0–10">
+        </div>
+        <div class="field">
+          <label>ĐTB lớp 11</label>
+          <input type="number" id="nn-dtb11" min="0" max="10" step="0.01" placeholder="0–10">
+        </div>
+        <div class="field">
+          <label>ĐTB lớp 12</label>
+          <input type="number" id="nn-dtb12" min="0" max="10" step="0.01" placeholder="0–10">
+        </div>
+      </div>
+      <div class="note" style="margin-top:4px">ĐTB THPT = (ĐTB lớp 10 × 1 + ĐTB lớp 11 × 2 + ĐTB lớp 12 × 3) / 6</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Điểm cộng & ưu tiên (nếu có)</div>
+      <div class="row">
+        <div class="field">
+          <label>Điểm cộng</label>
+          <input type="number" id="nn-bonus" min="0" max="10" step="0.01" placeholder="0">
+        </div>
+        <div class="field">
+          <label>Điểm ưu tiên KV, ĐT</label>
+          <input type="number" id="nn-priority" min="0" max="5" step="0.25" placeholder="0">
+        </div>
+      </div>
+    </div>
+
+    <div id="err-nn" class="err"></div>
+    <button class="calc-btn" onclick="calcNN()">Tính điểm xét tuyển</button>
+  </div>
+
+  <div id="result-area" class="hidden">
+    <div class="result-card">
+      <div class="result-label">Điểm xét tuyển (thang 100)</div>
+      <div class="result-score" id="final-score">—</div>
+      <div class="result-max">/ 100 điểm</div>
+    </div>
+    <div class="breakdown" id="breakdown"></div>
+  </div>
+</div>
+
+<script>
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',i===(t==='vn'?0:1)));
+  document.getElementById('tab-vn').classList.toggle('hidden',t!=='vn');
+  document.getElementById('tab-nn').classList.toggle('hidden',t==='vn');
+  document.getElementById('result-area').classList.add('hidden');
+}
+
+function getVal(id){const v=parseFloat(document.getElementById(id).value);return isNaN(v)?null:v;}
+
+function normalizeThi(thpt,dgnl,vsat){
+  let scores=[];
+  if(thpt!==null) scores.push({norm:thpt/30*100,lbl:'THPT '+thpt.toFixed(2)});
+  if(dgnl!==null) scores.push({norm:dgnl/1200*100,lbl:'ĐGNL '+dgnl});
+  if(vsat!==null) scores.push({norm:vsat,lbl:'V-SAT '+vsat.toFixed(2)});
+  if(!scores.length) return null;
+  scores.sort((a,b)=>b.norm-a.norm);
+  return scores[0];
+}
+
+function calcDTB(a,b,c){return (a*1+b*2+c*3)/6;}
+
+function showResult(score,parts){
+  document.getElementById('final-score').textContent=Math.min(score,100).toFixed(2);
+  document.getElementById('breakdown').innerHTML=parts.map(p=>`<div class="bk-item"><div class="bk-val">${p.val}</div><div class="bk-lbl">${p.lbl}</div></div>`).join('');
+  document.getElementById('result-area').classList.remove('hidden');
+}
+
+function calcVN(){
+  document.getElementById('err-vn').textContent='';
+  const thpt=getVal('thpt'),dgnl=getVal('dgnl'),vsat=getVal('vsat');
+  const d10=getVal('dtb10'),d11=getVal('dtb11'),d12=getVal('dtb12');
+  const bonus=getVal('bonus')||0,prio=getVal('priority')||0;
+
+  const best=normalizeThi(thpt,dgnl,vsat);
+  if(!best){document.getElementById('err-vn').textContent='Vui lòng nhập ít nhất một điểm thi.';return;}
+  if(d10===null||d11===null||d12===null){document.getElementById('err-vn').textContent='Vui lòng nhập đủ ĐTB 3 năm học.';return;}
+
+  const thiNorm=best.norm;
+  const dtb=calcDTB(d10,d11,d12);
+  const dtbNorm=dtb*10;
+  const total=thiNorm*0.6+dtbNorm*0.4+bonus+prio;
+
+  showResult(total,[
+    {val:thiNorm.toFixed(2),lbl:'Điểm thi (quy đổi 100)'},
+    {val:dtbNorm.toFixed(2),lbl:'ĐTB THPT (×40%)'},
+    {val:(bonus+prio).toFixed(2),lbl:'Cộng + ưu tiên'},
+  ]);
+}
+
+function calcNN(){
+  document.getElementById('err-nn').textContent='';
+  const d10=getVal('nn-dtb10'),d11=getVal('nn-dtb11'),d12=getVal('nn-dtb12');
+  const bonus=getVal('nn-bonus')||0,prio=getVal('nn-priority')||0;
+  if(d10===null||d11===null||d12===null){document.getElementById('err-nn').textContent='Vui lòng nhập đủ ĐTB 3 năm học.';return;}
+
+  const dtb=calcDTB(d10,d11,d12);
+  const dtbNorm=dtb*10;
+  const total=dtbNorm+bonus+prio;
+
+  showResult(total,[
+    {val:dtbNorm.toFixed(2),lbl:'ĐTB THPT (quy đổi 100)'},
+    {val:bonus.toFixed(2),lbl:'Điểm cộng'},
+    {val:prio.toFixed(2),lbl:'Điểm ưu tiên KV'},
+  ]);
+}
+</script>
+</body>
+</html>
