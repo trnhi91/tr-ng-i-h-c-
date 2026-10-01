@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🚀 Trạm Không Gian Toán 6</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-padding-top:env(safe-area-inset-top,0)}
+:root{
+  --bg:#03040f; --panel:rgba(12,16,50,.82); --panel2:rgba(7,10,34,.92);
+  --ink:#f2f5ff; --muted:#a4b1e0; --cyan:#4fe6e6; --violet:#b98bff;
+  --magenta:#ff74d8; --amber:#ffcb61; --green:#5cf0a6; --coral:#ff5f7d;
+  --line:rgba(150,168,255,.22);
+  --disp:'Baloo 2',sans-serif; --body:'Be Vietnam Pro',Arial,sans-serif; --mono:'Space Mono',monospace;
+}
+body{
+  font-family:var(--body);color:var(--ink);min-height:100vh;overflow-x:hidden;
+  padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0);
+  background:
+    radial-gradient(ellipse at 18% -8%,rgba(185,139,255,.26),transparent 42%),
+    radial-gradient(ellipse at 92% 8%,rgba(79,230,230,.17),transparent 38%),
+    radial-gradient(ellipse at 50% 105%,rgba(255,116,216,.13),transparent 42%),
+    linear-gradient(160deg,#020310,#080b2c 45%,#020310);
+}
+body:before{content:"";position:fixed;inset:0;z-index:-4;pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:70px 70px,70px 70px;mask-image:radial-gradient(circle at 50% 40%,#000 0%,transparent 75%)}
+#stars{position:fixed;inset:0;z-index:-3;pointer-events:none}
+.star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 7px #fff;animation:twinkle 2.5s infinite alternate}
+@keyframes twinkle{from{opacity:.15;transform:scale(.7)}to{opacity:1;transform:scale(1.4)}}
+.comet{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff;z-index:-2;pointer-events:none;
+  box-shadow:0 0 8px 2px #fff,-70px 22px 16px 1px rgba(180,200,255,.35);animation:shoot 1.5s linear forwards}
+@keyframes shoot{from{transform:translate(0,0) rotate(24deg);opacity:1}to{transform:translate(-320px,150px) rotate(24deg);opacity:0}}
+.orbit{position:fixed;border:1px solid rgba(150,168,255,.12);border-radius:50%;pointer-events:none;z-index:-2}
+.orbit.o1{width:720px;height:720px;left:-260px;top:45%}
+.orbit.o2{width:900px;height:900px;right:-400px;top:-180px}
+.planet-bg{position:fixed;border-radius:50%;pointer-events:none;z-index:-2;filter:blur(.2px);transition:transform .3s ease-out}
+.planet-bg.p1{width:95px;height:95px;left:6%;top:24%;background:radial-gradient(circle at 32% 28%,#ffdb89,#ff7a7a 45%,#793f9e);box-shadow:0 0 40px rgba(255,114,200,.28)}
+.planet-bg.p2{width:150px;height:150px;right:4%;bottom:10%;background:radial-gradient(circle at 35% 30%,#c5fbff,#538bff 45%,#21165d);box-shadow:0 0 60px rgba(79,230,230,.22)}
+
+/* HUD corner frame — dùng cho các bảng chính, gợi ý màn hình điều khiển phi thuyền */
+.hud-frame{position:relative}
+.hud-frame:before,.hud-frame:after{content:"";position:absolute;width:20px;height:20px;border:2px solid var(--cyan);opacity:.6;pointer-events:none}
+.hud-frame:before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.hud-frame:after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.panel-cut{clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
+.mono{font-family:var(--mono)}
+
+header{text-align:center;padding:38px 16px 10px;position:relative}
+.logo{display:inline-flex;align-items:center;gap:10px;padding:9px 17px;border:1px solid rgba(79,230,230,.32);
+  background:rgba(5,8,30,.6);border-radius:999px;color:var(--cyan);font-family:var(--mono);font-weight:700;
+  font-size:12px;letter-spacing:1.5px;box-shadow:0 0 30px rgba(79,230,230,.08)}
+.hero-rocket{font-size:46px;display:inline-block;margin-bottom:2px;
+  animation:launch .9s cubic-bezier(.2,.9,.3,1.2) both, floaty 3.2s 1s ease-in-out infinite}
+@keyframes launch{from{transform:translateY(60px) scale(.6) rotate(28deg);opacity:0}to{transform:translateY(0) scale(1) rotate(-10deg);opacity:1}}
+@keyframes floaty{50%{transform:translateY(-8px) rotate(-10deg)}}
+header h1{font-family:var(--disp);font-weight:800;margin:8px auto 8px;font-size:clamp(28px,5vw,48px);
+  line-height:1.08;letter-spacing:-.5px;text-shadow:0 0 34px rgba(140,150,255,.4)}
+header p{color:var(--muted);font-size:16px}
+
+.container{width:min(1080px,92%);margin:auto;padding-bottom:50px}
+.screen{display:none}
+.screen.active{display:block;animation:appear .35s ease}
+@keyframes appear{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;margin-top:26px}
+.card{position:relative;overflow:hidden;padding:26px 20px;min-height:260px;text-align:center;
+  border:1px solid var(--line);background:linear-gradient(150deg,var(--panel),var(--panel2));
+  box-shadow:0 18px 55px rgba(0,0,0,.28);transition:.25s;display:flex;flex-direction:column}
+.card:hover{transform:translateY(-6px);border-color:rgba(79,230,230,.55);box-shadow:0 18px 65px rgba(79,110,255,.2)}
+.hex{width:78px;height:78px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:36px;
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:linear-gradient(160deg,rgba(79,230,230,.2),rgba(185,139,255,.14));border:1px solid var(--line)}
+.card h2{font-family:var(--disp);font-size:19px;margin-bottom:8px;letter-spacing:.2px}
+.card p{color:var(--muted);line-height:1.55;font-size:14px;flex:1}
+
+button{border:0;padding:12px 18px;cursor:pointer;color:#04061a;font-family:inherit;font-size:15px;font-weight:800;transition:.2s;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+button:hover{transform:translateY(-2px)}
+button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+.primary{background:linear-gradient(135deg,var(--cyan),var(--violet));box-shadow:0 8px 25px rgba(120,140,255,.25)}
+.secondary{background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--ink)}
+.small{padding:9px 14px;font-size:13px}
+.card button{margin-top:15px}
+
+.learn-box,.game-box,.result-box{background:linear-gradient(150deg,var(--panel2),rgba(3,5,18,.96));
+  border:1px solid var(--line);padding:30px;box-shadow:0 20px 65px rgba(0,0,0,.32)}
+.section-title{font-family:var(--disp);font-size:26px;margin-bottom:6px}
+.section-sub{color:var(--muted);margin-bottom:22px;line-height:1.6;font-size:14px}
+
+.lesson-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.lesson{padding:20px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+.lesson h3{font-family:var(--disp);font-size:18px;margin-bottom:9px}
+.lesson p{color:#dce5ff;line-height:1.7;font-size:14px}
+.example{margin-top:12px;padding:12px 14px;background:rgba(0,0,0,.3);color:var(--cyan);font-family:var(--mono);font-weight:700;font-size:16px}
+.tip{margin-top:16px;padding:14px 16px;background:rgba(255,203,97,.09);border:1px solid rgba(255,203,97,.24);color:#ffe6ad;line-height:1.6;font-size:14px}
+
+.back-row{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+
+.game-top{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 20px;margin-bottom:16px;
+  background:rgba(9,12,42,.9);border:1px solid var(--line)}
+.mission{display:flex;align-items:center;gap:9px;font-family:var(--disp);font-weight:700;font-size:15px}
+.mini-ship{font-size:26px}
+.stats{display:flex;gap:9px;flex-wrap:wrap}
+.stat{padding:7px 11px;background:rgba(255,255,255,.06);font-weight:700;font-size:14px;font-family:var(--mono)}
+#score{color:var(--amber)} #lives{color:var(--coral)} #number{color:var(--cyan)}
+#meteorScore{color:var(--amber)} #meteorStreak{color:var(--magenta)} #meteorTime{color:var(--cyan)}
+#meteorTimeWrap.low #meteorTime{color:var(--coral);animation:pulse .6s infinite}
+@keyframes pulse{50%{opacity:.4}}
+
+.progress-wrap{margin-bottom:16px}
+.progress-label{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-bottom:6px;font-family:var(--mono)}
+.progress{height:8px;background:rgba(255,255,255,.08);overflow:hidden}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--magenta));transition:.4s}
+
+.question-box{text-align:center;padding:32px 24px;
+  background:radial-gradient(circle at 50% 0%,rgba(90,110,255,.16),transparent 42%),rgba(6,9,32,.94);border:1px solid var(--line)}
+.planet{font-size:58px;line-height:1;margin-bottom:10px;animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-7px)}}
+.topic{display:inline-block;padding:6px 12px;background:rgba(79,230,230,.1);color:var(--cyan);font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.6px}
+.question{font-family:var(--disp);font-size:clamp(26px,5vw,40px);font-weight:700;line-height:1.3;margin:20px auto;max-width:800px}
+.answers{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;max-width:760px;margin:auto}
+.answer{min-height:64px;font-size:20px;background:rgba(255,255,255,.055);border:2px solid var(--line);color:var(--ink)}
+.answer:hover{border-color:var(--cyan);background:rgba(79,230,230,.08)}
+.answer.correct{background:rgba(92,240,166,.15);border-color:var(--green);color:#c4ffe0}
+.answer.wrong{background:rgba(255,95,125,.15);border-color:var(--coral);color:#ffd4dc}
+.feedback{min-height:28px;margin:16px 0 0;font-weight:700;font-size:16px}
+.focus{margin:14px auto 0;color:var(--muted);font-size:13px;max-width:650px;line-height:1.5}
+
+.memory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;perspective:1000px}
+.flip-card{aspect-ratio:1;cursor:pointer}
+.flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flip-card.flipped .flip-inner,.flip-card.done .flip-inner{transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;
+  font-weight:700;text-align:center;padding:4px}
+.flip-front{background:linear-gradient(160deg,rgba(185,139,255,.28),rgba(79,230,230,.16));border:1px solid var(--line);font-size:26px}
+.flip-back{background:rgba(6,9,32,.96);border:1px solid var(--cyan);transform:rotateY(180deg);color:var(--cyan);font-family:var(--mono);font-size:15px}
+.flip-card.done .flip-back{border-color:var(--green);color:var(--green)}
+
+.result-box{text-align:center;padding:42px 24px}
+.result-planet{font-size:84px;filter:drop-shadow(0 0 30px rgba(79,230,230,.25))}
+.badge{display:inline-block;margin:12px 0;padding:8px 14px;background:rgba(79,230,230,.09);border:1px solid rgba(79,230,230,.28);
+  color:var(--cyan);font-family:var(--mono);font-weight:700;font-size:13px}
+.result-box h2{font-family:var(--disp);font-size:28px;margin:8px 0}
+.result-box p{color:var(--muted);font-size:16px;line-height:1.7}
+.result-score{font-size:44px;font-weight:800;color:var(--amber);margin:14px;font-family:var(--mono)}
+.result-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:22px}
+
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(max-width:800px){.lesson-grid{grid-template-columns:1fr}.memory-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:620px){
+  header{padding-top:22px} .game-top{flex-direction:column;align-items:stretch} .stats{justify-content:center}
+  .answers{grid-template-columns:1fr} .question-box,.learn-box{padding:22px 15px} .question{font-size:28px}
+  .answer{min-height:60px} .memory-grid{grid-template-columns:repeat(3,1fr)}
+}
+#cv{width:100%;height:auto;display:block;touch-action:none;user-select:none;cursor:crosshair;background:radial-gradient(ellipse at 50% 0%,rgba(90,110,255,.18),transparent 55%),rgba(3,5,22,.85)}
+.new-tag{display:inline-block;margin:0 auto 8px;padding:3px 9px;background:rgba(255,116,216,.14);color:var(--magenta);font:700 11px var(--mono);letter-spacing:.8px}
+#arcScore{color:var(--amber)}#arcLives{color:var(--coral)}#arcTime{color:var(--cyan)}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="orbit o1"></div><div class="orbit o2"></div>
+<div class="planet-bg p1"></div><div class="planet-bg p2"></div>
+
+<header>
+  <div class="logo">🪐 TRẠM ĐIỀU KHIỂN • TOÁN 6</div><br>
+  <span class="hero-rocket">🚀</span>
+  <h1>PHI HÀNH GIA CHINH PHỤC TOÁN</h1>
+  <p>Học từng bước nhỏ • Làm từng câu • Bay từng chặng 🌌</p>
+</header>
+
+<div class="container">
+
+<section id="home" class="screen active">
+  <div class="menu">
+    <div class="card">
+      <div class="hex">📚</div>
+      <h2>HỌC NHANH</h2>
+      <p>Ôn quan hệ chia hết, tính chất và dấu hiệu chia hết bằng ví dụ thật ngắn.</p>
+      <button class="primary" onclick="showScreen('learn')">Vào học</button>
+    </div>
+    <div class="card">
+      <div class="hex">🚀</div>
+      <h2>BAY &amp; LÀM BÀI</h2>
+      <p>Mỗi lần chỉ một câu. Chọn đáp án để đưa phi thuyền đi tiếp.</p>
+      <button class="primary" onclick="startFlight()">Bắt đầu</button>
+    </div>
+    <div class="card">
+      <div class="hex">🌟</div>
+      <h2>NHIỆM VỤ</h2>
+      <p>12 thử thách ngắn về chia hết, tính chất và dấu hiệu chia hết.</p>
+      <button class="primary" onclick="startMission()">Thử ngay</button>
+    </div>
+    <div class="card">
+      <div class="hex">☄️</div>
+      <h2>THIÊN THẠCH TỐC ĐỘ</h2>
+      <p>45 giây, trả lời nhanh các câu hỏi chia hết. Sai sẽ mất 3 giây!</p>
+      <button class="primary" onclick="startMeteor()">Xuất phát</button>
+    </div>
+    <div class="card">
+      <div class="hex">🧠</div>
+      <h2>GHÉP CẶP CHÒM SAO</h2>
+      <p>Lật thẻ, ghép dấu hiệu chia hết với ví dụ đúng. Ghép hết 6 cặp dấu hiệu và ví dụ!</p>
+      <button class="primary" onclick="startMemory()">Chơi ngay</button>
+    </div>
+  </div>
+
+  <div class="tip">
+    💡 <strong>Chế độ tập trung:</strong> Không cần làm nhanh (trừ Thiên thạch tốc độ!). Đọc một câu → tính → chọn một đáp án.
+    Nếu sai, xem lại rồi tiếp tục. Mỗi câu là một chặng bay.
+  </div>
+</section>
+
+<section id="learn" class="screen">
+  <div class="learn-box hud-frame">
+    <h2 class="section-title">📘 Bản đồ kiến thức</h2>
+    <p class="section-sub">4 trạm nhỏ. Mỗi trạm chỉ cần nhớ cách làm cơ bản.</p>
+    <div class="lesson-grid">
+      <div class="lesson"><h3>🔢 Trạm 1 — Quan hệ chia hết</h3><p>Số a chia hết cho số b nếu a : b là một số tự nhiên. Ta viết: <strong>a ⋮ b</strong>.</p><div class="example">12 : 3 = 4 → 12 ⋮ 3</div></div>
+      <div class="lesson"><h3>🔗 Trạm 2 — Tính chất</h3><p>Nếu a ⋮ b và b ⋮ c thì a ⋮ c. Nếu a ⋮ b và a ⋮ c thì a ⋮ (b + c).</p><div class="example">12 ⋮ 3 và 3 ⋮ 1 → 12 ⋮ 1</div></div>
+      <div class="lesson"><h3>2️⃣ Trạm 3 — Chia hết cho 2, 5, 10</h3><p>Chia hết cho 2: chữ số cuối là 0, 2, 4, 6, 8. Chia hết cho 5: chữ số cuối là 0 hoặc 5. Chia hết cho 10: chữ số cuối là 0.</p><div class="example">120 ⋮ 2, 120 ⋮ 5, 120 ⋮ 10</div></div>
+      <div class="lesson"><h3>3️⃣ Trạm 4 — Chia hết cho 3, 9</h3><p>Muốn biết một số có chia hết cho 3 hoặc 9, cộng các chữ số của số đó rồi kiểm tra.</p><div class="example">123 → 1+2+3=6 → 123 ⋮ 3</div></div>
+    </div>
+    <div class="tip">🧠 <strong>Mẹo nhớ:</strong> Nhìn chữ số cuối khi xét 2, 5, 10. Cộng các chữ số khi xét 3, 9. Làm từng câu, không cần làm nhanh.</div> <strong>Mẹo tập trung:</strong> Dùng ngón tay hoặc bút chỉ vào từng số khi tính. Làm xong một câu rồi mới chuyển sang câu kế tiếp.</div>
+    <div class="back-row">
+      <button class="secondary" onclick="showScreen('home')">← Trang chủ</button>
+      <button class="primary" onclick="startFlight()">🚀 Làm bài ngay</button>
+    </div>
+  </div>
+</section>
+
+<section id="game" class="screen">
+  <div class="game-top hud-frame">
+    <div class="mission"><span class="mini-ship">🚀</span> Phi hành gia Tân binh</div>
+    <div class="stats">
+      <div class="stat">⭐ <span id="score">0</span></div>
+      <div class="stat">❤️ <span id="lives">3</span></div>
+      <div class="stat">📝 <span id="number">1</span>/12</div>
+    </div>
+  </div>
+  <div class="progress-wrap"><div class="progress-label"><span>Hành trình</span><span id="progressText">0%</span></div><div class="progress"><div class="progress-bar" id="progressBar"></div></div></div>
+  <div class="game-box question-box hud-frame">
+    <div class="planet">🪐</div>
+    <div class="topic" id="topic">QUAN HỆ CHIA HẾT</div>
+    <div class="question" id="question">Câu hỏi</div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback"></div>
+    <div class="focus">🌟 Không cần vội — hãy tập trung vào đúng một câu đang hiện trên màn hình.</div>
+  </div>
+  <div class="back-row"><button class="secondary small" onclick="showScreen('home')">← Thoát nhiệm vụ</button></div>
+</section>
+
+<section id="meteor" class="screen">
+  <div class="game-top hud-frame">
+    <div class="mission"><span class="mini-ship">☄️</span> Thiên thạch tốc độ</div>
+    <div class="stats">
+      <div class="stat">⭐ <span id="meteorScore" class="mono">0</span></div>
+      <div class="stat">🔥 x<span id="meteorStreak" class="mono">0</span></div>
+      <div class="stat" id="meteorTimeWrap">⏱ <span id="meteorTime" class="mono">45</span>s</div>
+    </div>
+  </div>
+  <div class="game-box question-box hud-frame">
+    <div class="planet">☄️</div>
+    <div class="topic">TRÁNH VA CHẠM — TRẢ LỜI NHANH!</div>
+    <div class="question" id="meteorQuestion">? + ? = ?</div>
+    <div class="answers" id="meteorAnswers"></div>
+    <div class="feedback" id="meteorFeedback"></div>
+    <div class="focus">☄️ Chọn đúng để ghi điểm và giữ combo, chọn sai sẽ mất 3 giây!</div>
+  </div>
+  <div class="back-row"><button class="secondary small" onclick="exitMeteor()">← Thoát</button></div>
+</section>
+
+<section id="memory" class="screen">
+  <div class="game-top hud-frame">
+    <div class="mission"><span class="mini-ship">🧠</span> Ghép cặp chòm sao</div>
+    <div class="stats">
+      <div class="stat">🔁 <span id="memoryMoves" class="mono">0</span> lượt</div>
+      <div class="stat">⏱ <span id="memoryTime" class="mono">0:00</span></div>
+    </div>
+  </div>
+  <div class="game-box hud-frame" style="padding:24px">
+    <div class="memory-grid" id="memoryGrid"></div>
+  </div>
+  <div class="back-row"><button class="secondary small" onclick="exitMemory()">← Thoát</button></div>
+</section>
+
+<section id="arc" class="screen">
+  <div class="game-top hud-frame">
+    <div class="mission"><span class="mini-ship" id="arcIcon">🎮</span><span id="arcName"></span></div>
+    <div class="stats">
+      <div class="stat">⭐ <span id="arcScore">0</span></div>
+      <div class="stat">❤️ <span id="arcLives">3</span></div>
+      <div class="stat">⏱ <span id="arcTime">60</span>s</div>
+    </div>
+  </div>
+  <div class="game-box hud-frame" style="padding:10px"><canvas id="cv" width="720" height="480"></canvas></div>
+  <div class="tip" id="arcHelp"></div>
+  <div class="back-row">
+    <button class="secondary small" onclick="showScreen('home')">← Thoát</button>
+    <button class="secondary small" id="sndBtn" onclick="snd=!snd;this.textContent=snd?'🔊 Âm thanh':'🔇 Đã tắt'">🔊 Âm thanh</button>
+  </div>
+</section>
+<section id="result" class="screen">
+  <div class="result-box hud-frame">
+    <div class="result-planet">🌌</div>
+    <div class="badge" id="resultBadge">🚀 NHIỆM VỤ HOÀN THÀNH</div>
+    <h2>Phi hành gia Toán học!</h2>
+    <div class="result-score"><span id="finalScore">0</span> <span id="finalScoreUnit">⭐</span></div>
+    <p id="resultLine">Bạn đã trả lời đúng <strong id="finalCorrect">0</strong>/12 câu.</p>
+    <p id="resultMessage">Mỗi lần luyện tập là thêm một bước tiến.</p>
+    <div class="result-actions">
+      <button class="primary" onclick="replayGame()">🔄 Chơi lại</button>
+      <button class="secondary" onclick="showScreen('learn')">📘 Ôn lại</button>
+      <button class="secondary" onclick="showScreen('home')">🏠 Trang chủ</button>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+const stars=document.getElementById("stars");
+for(let i=0;i<150;i++){
+  const s=document.createElement("div");s.className="star";
+  const size=Math.random()*2.5+1;
+  s.style.width=size+"px";s.style.height=size+"px";
+  s.style.left=Math.random()*100+"%";s.style.top=Math.random()*100+"%";
+  s.style.animationDelay=Math.random()*3+"s";s.style.animationDuration=(1.5+Math.random()*3)+"s";
+  stars.appendChild(s);
+}
+function spawnComet(){
+  const c=document.createElement("div");c.className="comet";
+  c.style.left=Math.random()*65+20+"%";c.style.top=Math.random()*28+"%";
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),1600);
+}
+setInterval(spawnComet,3800+Math.random()*4200);
+document.addEventListener("mousemove",e=>{
+  const x=e.clientX/window.innerWidth-.5, y=e.clientY/window.innerHeight-.5;
+  document.querySelectorAll(".planet-bg").forEach((p,i)=>{
+    const d=(i+1)*12; p.style.transform=`translate(${x*d}px, ${y*d}px)`;
+  });
+});
+
+function showScreen(id){
+  clearInterval(meteorTimer); clearInterval(memoryTimer); arcRun=false;
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function shuffle(array){
+  const c=[...array];
+  for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}
+  return c;
+}
+function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min}
+
+/* ===== Bay & làm bài / Nhiệm vụ (giữ nguyên logic gốc) ===== */
+const flightQuestions=[
+  {topic:"🔢 QUAN HỆ CHIA HẾT",question:"Số 12 có chia hết cho 3 không?",answers:["Có","Không","Chỉ khi chia cho 2","Không biết"],correct:0},
+  {topic:"🔢 QUAN HỆ CHIA HẾT",question:"Phép chia nào là phép chia hết?",answers:["10 : 3","12 : 4","14 : 5","17 : 2"],correct:1},
+  {topic:"🔢 QUAN HỆ CHIA HẾT",question:"Trong các số sau, số nào chia hết cho 5?",answers:["12","18","25","32"],correct:2},
+  {topic:"🔗 TÍNH CHẤT",question:"Nếu 12 ⋮ 3 và 3 ⋮ 1 thì theo tính chất, 12 có chia hết cho 1 không?",answers:["Có","Không","Chỉ khi 12 là số chẵn","Không biết"],correct:0},
+  {topic:"🔗 TÍNH CHẤT",question:"Nếu a ⋮ 2 và a ⋮ 3 thì a có chia hết cho 6 không?",answers:["Có","Không","Chỉ khi a < 10","Không biết"],correct:0},
+  {topic:"🔗 TÍNH CHẤT",question:"Nếu a ⋮ 3 và b ⋮ 3 thì số nào chắc chắn chia hết cho 3?",answers:["a + b","a + 1","b + 1","a × 1"],correct:0},
+  {topic:"2️⃣ DẤU HIỆU CHIA HẾT",question:"Số nào chia hết cho 2?",answers:["13","17","24","35"],correct:2},
+  {topic:"5️⃣ DẤU HIỆU CHIA HẾT",question:"Số nào chia hết cho 5?",answers:["21","34","45","48"],correct:2},
+  {topic:"🔟 DẤU HIỆU CHIA HẾT",question:"Số nào chia hết cho 10?",answers:["20","25","31","42"],correct:0},
+  {topic:"3️⃣ DẤU HIỆU CHIA HẾT",question:"Số nào chia hết cho 3?",answers:["14","21","25","31"],correct:1},
+  {topic:"9️⃣ DẤU HIỆU CHIA HẾT",question:"Số nào chia hết cho 9?",answers:["18","20","25","31"],correct:0},
+  {topic:"🔎 KIỂM TRA NHANH",question:"Số 135 có chia hết cho 5 không?",answers:["Có","Không","Chỉ chia hết cho 3","Không biết"],correct:0}
+];
+
+const missionQuestions=[
+  {topic:"🚀 TRẠM 1",question:"Số 20 có chia hết cho 4 không?",answers:["Có","Không","Chỉ khi chia cho 5","Không biết"],correct:0},
+  {topic:"🚀 TRẠM 2",question:"Số nào KHÔNG chia hết cho 2?",answers:["16","22","27","30"],correct:2},
+  {topic:"🚀 TRẠM 3",question:"Số nào chia hết cho 5?",answers:["14","25","32","41"],correct:1},
+  {topic:"🚀 TRẠM 4",question:"Số nào chia hết cho 10?",answers:["15","20","24","35"],correct:1},
+  {topic:"🚀 TRẠM 5",question:"Số 36 có chia hết cho 3 không?",answers:["Có","Không","Chỉ chia hết cho 5","Không biết"],correct:0},
+  {topic:"🚀 TRẠM 6",question:"Số 45 có chia hết cho 9 không?",answers:["Có","Không","Chỉ chia hết cho 2","Không biết"],correct:0},
+  {topic:"🚀 TRẠM 7",question:"Tổng các chữ số của 24 bằng bao nhiêu?",answers:["4","5","6","7"],correct:2},
+  {topic:"🚀 TRẠM 8",question:"Số nào chia hết cho cả 2 và 5?",answers:["12","15","20","23"],correct:2},
+  {topic:"🚀 TRẠM 9",question:"Nếu 8 ⋮ 4 thì số 8 có chia hết cho 4 không?",answers:["Có","Không","Chỉ khi 8 là số lẻ","Không biết"],correct:0},
+  {topic:"🚀 TRẠM 10",question:"Nếu a ⋮ 2 và a ⋮ 4 thì a có chia hết cho 2 không?",answers:["Có","Không","Chỉ khi a = 4","Không biết"],correct:0},
+  {topic:"🚀 TRẠM 11",question:"Số nào vừa chia hết cho 3 vừa chia hết cho 9?",answers:["12","18","20","25"],correct:1},
+  {topic:"🚀 TRẠM 12",question:"Muốn kiểm tra một số có chia hết cho 2, ta nhìn vào đâu?",answers:["Chữ số đầu","Chữ số cuối","Tổng các chữ số","Số chữ số"],correct:1}
+];
+
+let current=0,score=0,correct=0,lives=3,locked=false,activeQuestions=[],gameMode="flight";
+function startFlight(){gameMode="flight";activeQuestions=shuffle(flightQuestions);startGame();}
+function startMission(){gameMode="mission";activeQuestions=shuffle(missionQuestions);startGame();}
+function startGame(){
+  current=0;score=0;correct=0;lives=3;locked=false;
+  document.getElementById("score").textContent=score;
+  document.getElementById("lives").textContent=lives;
+  showScreen("game");showQuestion();
+}
+function showQuestion(){
+  locked=false;const q=activeQuestions[current];
+  document.getElementById("topic").textContent=q.topic;
+  document.getElementById("question").textContent=q.question;
+  document.getElementById("number").textContent=current+1;
+  document.getElementById("feedback").textContent="";
+  const answers=document.getElementById("answers");answers.innerHTML="";
+  q.answers.forEach((answer,index)=>{
+    const btn=document.createElement("button");btn.className="answer";btn.textContent=answer;
+    btn.onclick=()=>checkAnswer(index,btn);answers.appendChild(btn);
+  });
+  const percent=Math.round((current/activeQuestions.length)*100);
+  document.getElementById("progressBar").style.width=percent+"%";
+  document.getElementById("progressText").textContent=percent+"%";
+}
+function checkAnswer(index,button){
+  if(locked)return;locked=true;
+  const q=activeQuestions[current];const all=document.querySelectorAll("#answers .answer");
+  if(index===q.correct){
+    button.classList.add("correct");score+=10;correct++;
+    document.getElementById("score").textContent=score;
+    document.getElementById("feedback").textContent="🎉 Chính xác! Phi thuyền bay tiếp!";
+  }else{
+    button.classList.add("wrong");all[q.correct].classList.add("correct");lives--;
+    document.getElementById("lives").textContent=lives;
+    document.getElementById("feedback").textContent="💫 Chưa đúng. Nhìn đáp án xanh rồi thử nhớ cách tính nhé!";
+  }
+  setTimeout(()=>{
+    if(lives<=0||current===activeQuestions.length-1)finishGame();
+    else{current++;showQuestion();}
+  },1200);
+}
+function finishGame(){
+  gameMode=gameMode==="mission"?"mission":"flight";
+  document.getElementById("finalScore").textContent=score;
+  document.getElementById("finalScoreUnit").textContent="⭐";
+  document.getElementById("finalCorrect").textContent=correct;
+  document.getElementById("resultLine").innerHTML=`Bạn đã trả lời đúng <strong>${correct}</strong>/${activeQuestions.length} câu.`;
+  let msg="",badge="";
+  if(gameMode==="mission"){
+    badge="🏆 NHIỆM VỤ HOÀN THÀNH";
+    if(correct===activeQuestions.length)msg="🏆 Hoàn thành Nhiệm vụ Vũ trụ! Bộ câu hỏi này đã được thiết kế riêng cho chế độ thử thách.";
+    else if(correct>=9)msg="🚀 Nhiệm vụ đã hoàn thành rất tốt! Bạn đã vượt qua nhiều trạm khó.";
+    else if(correct>=6)msg="🪐 Nhiệm vụ đã hoàn thành! Ôn lại quan hệ chia hết và các dấu hiệu rồi thử lại nhé.";
+    else msg="🌱 Không sao! Hãy quay về Bản đồ kiến thức và luyện từng phép tính.";
+  }else{
+    badge="🚀 CHUYẾN BAY HOÀN THÀNH";
+    if(correct===activeQuestions.length)msg="🌟 Tuyệt vời! Bạn đã hoàn thành chuyến bay!";
+    else if(correct>=9)msg="🚀 Rất tốt! Bạn đang bay rất xa trong vũ trụ Toán học!";
+    else if(correct>=6)msg="🪐 Khá rồi! Ôn lại vài phép tính và bay thêm một chuyến nhé!";
+    else msg="🌱 Không sao cả! Hãy luyện lại từng bước rồi bay tiếp.";
+  }
+  document.getElementById("resultBadge").textContent=badge;
+  document.getElementById("resultMessage").textContent=msg;
+  showScreen("result");
+}
+
+/* ===== Thiên thạch tốc độ (mới) ===== */
+let meteorTimer=null,meteorTime=45,meteorScore=0,meteorStreak=0,meteorBestStreak=0,meteorCorrect=0,meteorLocked=false;
+function makeMeteorQuestion(){
+  const types=["2","5","10","3","9","relation"];
+  const type=types[randInt(0,types.length-1)];
+  let question,answer,choices;
+  if(type==="2"){
+    const good=[12,14,16,18,20,22,24,26,28,30,32,34,36,40,42,48];
+    answer=good[randInt(0,good.length-1)];
+    question=`Số ${answer} có chia hết cho 2 không?`;
+    choices=["Có","Không","Chỉ chia hết cho 5","Không biết"];
+    return {question,answers:choices,correct:0};
+  }
+  if(type==="5"){
+    const good=[15,20,25,30,35,40,45,50,55];
+    answer=good[randInt(0,good.length-1)];
+    question=`Số ${answer} có chia hết cho 5 không?`;
+    choices=["Có","Không","Chỉ chia hết cho 2","Không biết"];
+    return {question,answers:choices,correct:0};
+  }
+  if(type==="10"){
+    const good=[10,20,30,40,50,60,70,80,90];
+    answer=good[randInt(0,good.length-1)];
+    question=`Số ${answer} có chia hết cho 10 không?`;
+    choices=["Có","Không","Chỉ chia hết cho 5","Không biết"];
+    return {question,answers:choices,correct:0};
+  }
+  if(type==="3"){
+    const good=[12,15,18,21,24,27,30,33,36,42];
+    answer=good[randInt(0,good.length-1)];
+    question=`Số ${answer} có chia hết cho 3 không?`;
+    choices=["Có","Không","Chỉ chia hết cho 9","Không biết"];
+    return {question,answers:choices,correct:0};
+  }
+  if(type==="9"){
+    const good=[18,27,36,45,54,63,72,81,90];
+    answer=good[randInt(0,good.length-1)];
+    question=`Số ${answer} có chia hết cho 9 không?`;
+    choices=["Có","Không","Chỉ chia hết cho 2","Không biết"];
+    return {question,answers:choices,correct:0};
+  }
+  question="Nếu 6 ⋮ 3 và 3 ⋮ 1 thì 6 có chia hết cho 1 không?";
+  choices=["Có","Không","Chỉ khi 6 là số chẵn","Không biết"];
+  return {question,answers:choices,correct:0};
+}
+
+function startMeteor(){
+  gameMode="meteor";meteorScore=0;meteorStreak=0;meteorBestStreak=0;meteorCorrect=0;meteorTime=45;meteorLocked=false;
+  document.getElementById("meteorScore").textContent=meteorScore;
+  document.getElementById("meteorStreak").textContent=meteorStreak;
+  document.getElementById("meteorTime").textContent=meteorTime;
+  document.getElementById("meteorTimeWrap").classList.remove("low");
+  showScreen("meteor");nextMeteor();
+  clearInterval(meteorTimer);
+  meteorTimer=setInterval(()=>{
+    meteorTime--;document.getElementById("meteorTime").textContent=meteorTime;
+    document.getElementById("meteorTimeWrap").classList.toggle("low",meteorTime<=10);
+    if(meteorTime<=0){clearInterval(meteorTimer);finishMeteor();}
+  },1000);
+}
+let currentMeteorQ=null;
+function nextMeteor(){
+  meteorLocked=false;const q=makeMeteorQuestion();currentMeteorQ=q;
+  document.getElementById("meteorQuestion").textContent=q.question;
+  document.getElementById("meteorFeedback").textContent="";
+  const wrap=document.getElementById("meteorAnswers");wrap.innerHTML="";
+  q.answers.forEach((ans,i)=>{
+    const b=document.createElement("button");b.className="answer";b.textContent=ans;
+    b.onclick=()=>meteorAnswer(i,b);wrap.appendChild(b);
+  });
+}
+function meteorAnswer(i,btn){
+  if(meteorLocked||meteorTime<=0)return;meteorLocked=true;
+  const q=currentMeteorQ;const all=document.querySelectorAll("#meteorAnswers .answer");
+  if(i===q.correct){
+    btn.classList.add("correct");meteorStreak++;meteorCorrect++;
+    meteorBestStreak=Math.max(meteorBestStreak,meteorStreak);
+    const bonus=meteorStreak>=3?15:10;meteorScore+=bonus;
+    document.getElementById("meteorScore").textContent=meteorScore;
+    document.getElementById("meteorStreak").textContent=meteorStreak;
+    document.getElementById("meteorFeedback").textContent=meteorStreak>=3?`🔥 Combo x${meteorStreak}! +${bonus} điểm`:"✅ Chính xác!";
+  }else{
+    btn.classList.add("wrong");all[q.correct].classList.add("correct");
+    meteorStreak=0;meteorTime=Math.max(0,meteorTime-3);
+    document.getElementById("meteorTime").textContent=meteorTime;
+    document.getElementById("meteorStreak").textContent=meteorStreak;
+    document.getElementById("meteorFeedback").textContent="💥 Va chạm! Mất 3 giây";
+  }
+  setTimeout(()=>{
+    if(meteorTime<=0){clearInterval(meteorTimer);finishMeteor();}
+    else nextMeteor();
+  },700);
+}
+function exitMeteor(){clearInterval(meteorTimer);showScreen("home");}
+function finishMeteor(){
+  document.getElementById("finalScore").textContent=meteorScore;
+  document.getElementById("finalScoreUnit").textContent="⭐ điểm";
+  document.getElementById("resultLine").innerHTML=`Bạn trả lời đúng <strong>${meteorCorrect}</strong> câu trong 45 giây, combo cao nhất x${meteorBestStreak}.`;
+  let msg="";
+  if(meteorScore>=250)msg="🏆 Tốc độ phi thường! Bạn là phi công phản xạ nhanh nhất trạm!";
+  else if(meteorScore>=150)msg="🚀 Rất nhanh và chính xác! Thử phá kỉ lục ở lượt sau nhé!";
+  else if(meteorScore>=80)msg="☄️ Khá tốt! Giữ bình tĩnh và tính nhanh hơn một chút nữa.";
+  else msg="🌱 Cứ luyện tiếp, phản xạ tính nhẩm sẽ nhanh dần lên!";
+  document.getElementById("resultBadge").textContent="☄️ ĐÃ VƯỢT MƯA THIÊN THẠCH";
+  document.getElementById("resultMessage").textContent=msg;
+  showScreen("result");
+}
+
+/* ===== Ghép cặp chòm sao (mới) ===== */
+const memoryPairs=[
+  ["Chia hết cho 2","Tận cùng 0, 2, 4, 6, 8"],
+  ["Chia hết cho 5","Tận cùng 0 hoặc 5"],
+  ["Chia hết cho 10","Tận cùng 0"],
+  ["Chia hết cho 3","Tổng chữ số chia hết cho 3"],
+  ["Chia hết cho 9","Tổng chữ số chia hết cho 9"],
+  ["12 ⋮ 3","12 : 3 = 4"]
+];
+let memoryTimer=null,memorySeconds=0,memoryMoves=0,memoryMatched=0,memoryFlipped=[],memoryLock=false;
+function startMemory(){
+  gameMode="memory";memorySeconds=0;memoryMoves=0;memoryMatched=0;memoryFlipped=[];memoryLock=false;
+  document.getElementById("memoryMoves").textContent=memoryMoves;
+  document.getElementById("memoryTime").textContent="0:00";
+  const cards=[];
+  memoryPairs.forEach((p,idx)=>{cards.push({label:p[0],pair:idx});cards.push({label:p[1],pair:idx});});
+  const shuffled=shuffle(cards);
+  const grid=document.getElementById("memoryGrid");grid.innerHTML="";
+  shuffled.forEach(c=>{
+    const el=document.createElement("div");el.className="flip-card";
+    el.innerHTML=`<div class="flip-inner"><div class="flip-front">✨</div><div class="flip-back">${c.label}</div></div>`;
+    el.onclick=()=>flipMemory(el,c);grid.appendChild(el);
+  });
+  showScreen("memory");
+  clearInterval(memoryTimer);
+  memoryTimer=setInterval(()=>{
+    memorySeconds++;const m=Math.floor(memorySeconds/60),s=memorySeconds%60;
+    document.getElementById("memoryTime").textContent=m+":"+String(s).padStart(2,"0");
+  },1000);
+}
+function flipMemory(el,c){
+  if(memoryLock||el.classList.contains("flipped")||el.classList.contains("done"))return;
+  el.classList.add("flipped");memoryFlipped.push({el,c});
+  if(memoryFlipped.length===2){
+    memoryMoves++;document.getElementById("memoryMoves").textContent=memoryMoves;memoryLock=true;
+    const[a,b]=memoryFlipped;
+    if(a.c.pair===b.c.pair){
+      a.el.classList.add("done");b.el.classList.add("done");memoryMatched++;memoryFlipped=[];memoryLock=false;
+      if(memoryMatched===memoryPairs.length){clearInterval(memoryTimer);setTimeout(finishMemory,500);}
+    }else{
+      setTimeout(()=>{a.el.classList.remove("flipped");b.el.classList.remove("flipped");memoryFlipped=[];memoryLock=false;},800);
+    }
+  }
+}
+function exitMemory(){clearInterval(memoryTimer);showScreen("home");}
+function finishMemory(){
+  const m=Math.floor(memorySeconds/60),s=memorySeconds%60,t=m+":"+String(s).padStart(2,"0");
+  document.getElementById("finalScore").textContent=memoryMoves;
+  document.getElementById("finalScoreUnit").textContent="lượt lật";
+  document.getElementById("resultLine").innerHTML=`Bạn đã ghép xong ${memoryPairs.length} cặp trong <strong>${t}</strong>.`;
+  let msg="";
+  if(memoryMoves<=8)msg="🧠 Trí nhớ siêu phàm! Bạn ghép gần như hoàn hảo!";
+  else if(memoryMoves<=12)msg="🌟 Rất tốt! Trí nhớ của bạn đang tiến bộ rõ rệt.";
+  else msg="🌱 Hoàn thành rồi! Chơi lại để nhớ nhanh hơn nữa nhé.";
+  document.getElementById("resultBadge").textContent="🧠 ĐÃ GIẢI MÃ CHÒM SAO";
+  document.getElementById("resultMessage").textContent=msg;
+  showScreen("result");
+}
+
+function replayGame(){
+  if(gameMode==="arc")return startArc(arcId);
+  if(gameMode==="mission")startMission();
+  else if(gameMode==="meteor")startMeteor();
+  else if(gameMode==="memory")startMemory();
+  else startFlight();
+}
+/* ===== 5 trò chơi arcade mới (canvas) ===== */
+const ARC=[
+ {id:"slice",icon:"⚔️",name:"CHÉM SAO CHỔI",desc:"Thiên thể bay tung lên — vuốt để chém đúng đáp án!",help:"Giữ chuột / ngón tay và VUỐT qua thiên thể mang đáp án đúng. Chém nhầm sẽ mất tim."},
+ {id:"shoot",icon:"🎯",name:"BẮN THIÊN THẠCH",desc:"Chạm để bắn hạ thiên thạch mang kết quả đúng.",help:"Chạm vào thiên thạch có đáp án đúng trước khi nó rơi xuống. Bắn nhầm sẽ mất tim."},
+ {id:"race",icon:"🛸",name:"ĐUA PHI THUYỀN",desc:"Lái phi thuyền qua cổng chứa đáp án đúng.",help:"Kéo ngón tay / di chuột (hoặc phím ← →) để lái. Bay xuyên qua cổng có đáp án đúng."},
+ {id:"alien",icon:"👾",name:"ĐẬP NGƯỜI NGOÀI HÀNH TINH",desc:"Người ngoài hành tinh trồi lên — đập đúng con mang đáp án!",help:"Chạm vào con người ngoài hành tinh mang đáp án đúng. Chúng chỉ ló lên vài giây thôi!"},
+ {id:"order",icon:"🔢",name:"XẾP SAO THEO THỨ TỰ",desc:"Tính nhẩm rồi chạm từ kết quả NHỎ đến LỚN.",help:"Tính từng phép tính, rồi chạm lần lượt từ kết quả nhỏ nhất đến lớn nhất."}
+];
+{const m=document.querySelector("#home .menu");
+ARC.forEach(g=>{const d=document.createElement("div");d.className="card";
+d.innerHTML=`<div class="hex">${g.icon}</div><div><span class="new-tag">MỚI • 60 GIÂY</span></div><h2>${g.name}</h2><p>${g.desc}</p><button class="primary" onclick="startArc('${g.id}')">Chơi ngay</button>`;m.appendChild(d);});}
+const cv=document.getElementById("cv"),cx=cv.getContext("2d"),W=720,H=480,SY=420;
+const EMO=["🪐","🌙","☄️","⭐","🌍","🛰️"],COL=[["#4fe6e6","#21165d"],["#b98bff","#2a1466"],["#ff74d8","#4a1450"],["#ffcb61","#5a3210"]];
+let arcRun=false,arcTok=0,arcId="slice",G,ents=[],parts=[],pops=[],trail=[],arcQ=null,lastT=0,wt=0,shake=0,shipX=360,ptr={x:360,y:240,down:false},snd=true,orderNext=0;
+function beep(f,d=.12){if(!snd)return;try{const a=beep.c||(beep.c=new AudioContext()),o=a.createOscillator(),g=a.createGain();o.type="triangle";o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(a.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,a.currentTime+d);o.stop(a.currentTime+d);}catch(e){}}
+function startArc(id){
+  arcId=id;gameMode="arc";const g=ARC.find(x=>x.id===id);
+  G={score:0,lives:3,time:60,ok:0,combo:0,best:0};ents=[];parts=[];pops=[];trail=[];shipX=ptr.x=360;
+  document.getElementById("arcIcon").textContent=g.icon;document.getElementById("arcName").textContent=g.name;
+  document.getElementById("arcHelp").innerHTML="💡 <strong>Cách chơi:</strong> "+g.help;
+  showScreen("arc");arcRun=true;newWave();lastT=performance.now();const k=++arcTok;requestAnimationFrame(t=>loop(t,k));
+}
+function newWave(){
+  wt=.35;ents=[];
+  if(arcId==="order"){
+    const vals=new Set(),list=[];
+    while(list.length<5){const q=makeMeteorQuestion(),v=+q.answers[q.correct];if(vals.has(v))continue;vals.add(v);
+      let x,y,ok,n=0;do{x=randInt(90,630);y=randInt(110,410);ok=list.every(o=>Math.hypot(o.x-x,o.y-y)>105);n++}while(!ok&&n<60);
+      list.push({x,y,v,label:q.question.replace(" = ?",""),r:46,emo:EMO[randInt(0,5)],c:list.length%4,rot:0});}
+    ents=list;return;}
+  arcQ=makeMeteorQuestion();const xs=shuffle([90,270,450,630]),spd=Math.min(G.ok*4,70);
+  arcQ.answers.forEach((a,i)=>{
+    const e={label:a,ok:i===arcQ.correct,r:40,emo:EMO[randInt(0,5)],c:i%4,rot:0,d:0,t:1};
+    if(arcId==="slice"){e.x=randInt(100,620);e.y=H+50;e.vx=(360-e.x)*.35+randInt(-40,40);e.vy=-randInt(570,640);e.d=i*.32;}
+    else if(arcId==="shoot"){e.x=xs[i]+randInt(-25,25);e.y=-40-randInt(0,70);e.vy=65+spd;}
+    else if(arcId==="race"){e.x=xs[i];e.y=-50;e.vy=110+spd;e.r=44;}
+    else{const hs=shuffle([[140,200],[360,200],[580,200],[140,350],[360,350],[580,350]]);e.x=hs[i][0];e.y=hs[i][1];e.r=46;e.t=0;e.life=3.6;}
+    ents.push(e);});
+}
+function burst(e,c){for(let i=0;i<16;i++){const a=Math.random()*6.283,s=randInt(80,300);parts.push({x:e.x,y:e.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:.6,c});}}
+function popText(e,txt,c){pops.push({x:e.x,y:e.y-30,t:.9,txt,c});}
+function hit(e){
+  if(e.gone)return;e.gone=true;
+  const good=arcId==="order"?e.v===Math.min(...ents.filter(o=>!o.gone||o===e).map(o=>o.v)):e.ok;
+  if(good){
+    G.combo++;G.ok++;G.best=Math.max(G.best,G.combo);const p=G.combo>=3?15:10;G.score+=p;
+    burst(e,"#5cf0a6");popText(e,G.combo>=3?`🔥 x${G.combo} +${p}`:`+${p}`,"#5cf0a6");beep(520+Math.min(G.combo,10)*45);
+    if(arcId==="order"){if(ents.every(o=>o.gone)){G.score+=20;popText({x:360,y:240},"⭐ Hoàn thành! +20","#ffcb61");beep(880,.3);}}
+    else ents.forEach(o=>o.gone=true);
+  }else{
+    G.lives--;G.combo=0;shake=.3;burst(e,"#ff5f7d");popText(e,"💥 Sai rồi!","#ff5f7d");beep(150,.28);
+    if(arcId==="order"){e.gone=false;} 
+    if(G.lives<=0)finishArc();
+  }
+}
+function segDist(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;let t=l?((px-ax)*dx+(py-ay)*dy)/l:0;t=Math.max(0,Math.min(1,t));return Math.hypot(px-ax-t*dx,py-ay-t*dy);}
+function pos(ev){const r=cv.getBoundingClientRect();return{x:(ev.clientX-r.left)*W/r.width,y:(ev.clientY-r.top)*H/r.height};}
+cv.addEventListener("pointerdown",ev=>{
+  if(!arcRun)return;ev.preventDefault();const p=pos(ev);ptr.x=p.x;ptr.y=p.y;ptr.down=true;trail=[{x:p.x,y:p.y,t:0}];
+  if(arcId==="shoot"||arcId==="alien"||arcId==="order"){
+    const e=[...ents].reverse().find(o=>!o.gone&&!(o.d>0)&&Math.hypot(o.x-p.x,o.y-p.y)<o.r+10);if(e)hit(e);}
+});
+cv.addEventListener("pointermove",ev=>{
+  if(!arcRun)return;const p=pos(ev);
+  if(arcId==="race"){ptr.x=Math.max(40,Math.min(680,p.x));return;}
+  if(arcId==="slice"&&ptr.down){const a=trail[trail.length-1]||p;
+    ents.forEach(e=>{if(!e.gone&&!(e.d>0)&&segDist(e.x,e.y,a.x,a.y,p.x,p.y)<e.r)hit(e);});
+    trail.push({x:p.x,y:p.y,t:0});}
+});
+addEventListener("pointerup",()=>{ptr.down=false});
+addEventListener("keydown",ev=>{if(!arcRun||arcId!=="race")return;if(ev.key==="ArrowLeft")ptr.x=Math.max(40,ptr.x-90);if(ev.key==="ArrowRight")ptr.x=Math.min(680,ptr.x+90);});
+function update(dt){
+  G.time-=dt;if(G.time<=0)return finishArc();
+  shake=Math.max(0,shake-dt);shipX+=(ptr.x-shipX)*Math.min(1,dt*10);
+  ents.forEach(e=>{
+    if(e.gone)return;e.rot+=dt;if(e.d>0){e.d-=dt;return;}
+    if(arcId==="slice"){e.vy+=520*dt;e.x+=e.vx*dt;e.y+=e.vy*dt;if(e.vy>0&&e.y>H+50)e.gone=true;}
+    else if(arcId==="shoot"){e.y+=e.vy*dt;if(e.y>H+50)e.gone=true;}
+    else if(arcId==="race"){e.y+=e.vy*dt;if(e.y>H+50)e.gone=true;else if(Math.abs(e.y-SY)<38&&Math.abs(e.x-shipX)<e.r+16)hit(e);}
+    else if(arcId==="alien"){e.t=Math.min(1,e.t+dt*5);e.life-=dt;if(e.life<=0)e.gone=true;}
+  });
+  if(!G||G.lives<=0)return;
+  if(ents.every(e=>e.gone)){wt-=dt;if(wt<=0)newWave();}
+  parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.l-=dt});parts=parts.filter(p=>p.l>0);
+  pops.forEach(p=>{p.y-=40*dt;p.t-=dt});pops=pops.filter(p=>p.t>0);
+  trail.forEach(t=>t.t+=dt);trail=trail.filter(t=>t.t<.25);
+  document.getElementById("arcScore").textContent=G.score;document.getElementById("arcLives").textContent=Math.max(0,G.lives);
+  document.getElementById("arcTime").textContent=Math.ceil(G.time);
+}
+function drawEnt(e){
+  const s=arcId==="alien"?e.t*Math.min(1,e.life*1.5):1;if(s<=0)return;
+  if(arcId==="alien"){cx.fillStyle="rgba(0,0,0,.55)";cx.beginPath();cx.ellipse(e.x,e.y+e.r*.8,e.r*1.1,e.r*.32,0,0,6.283);cx.fill();}
+  cx.save();cx.translate(e.x,e.y);cx.scale(s,s);
+  const [a,b]=COL[e.c],g=cx.createRadialGradient(-e.r*.3,-e.r*.3,4,0,0,e.r);g.addColorStop(0,a);g.addColorStop(1,b);
+  cx.shadowColor=a;cx.shadowBlur=18;cx.fillStyle=g;cx.beginPath();cx.arc(0,0,e.r,0,6.283);cx.fill();cx.shadowBlur=0;
+  cx.lineWidth=2;cx.strokeStyle="rgba(255,255,255,.55)";cx.stroke();
+  cx.font="22px sans-serif";cx.fillText(arcId==="alien"?"👾":e.emo,0,-e.r*.62);
+  cx.font=`800 ${e.label.length>5?21:28}px 'Space Mono',monospace`;cx.lineWidth=4;cx.strokeStyle="rgba(0,0,20,.7)";cx.strokeText(e.label,0,8);cx.fillStyle="#fff";cx.fillText(e.label,0,8);
+  cx.restore();
+}
+function draw(){
+  cx.clearRect(0,0,W,H);cx.save();if(shake>0)cx.translate(randInt(-6,6),randInt(-6,6));
+  cx.textAlign="center";cx.textBaseline="middle";
+  cx.fillStyle="rgba(0,0,0,.4)";cx.fillRect(160,12,400,58);cx.strokeStyle="rgba(79,230,230,.4)";cx.strokeRect(160,12,400,58);
+  cx.fillStyle="#fff";cx.font="800 34px 'Baloo 2',sans-serif";
+  if(arcId==="order"){cx.font="800 26px 'Baloo 2',sans-serif";cx.fillText(`Chạm từ NHỎ → LỚN  (còn ${ents.filter(e=>!e.gone).length})`,360,41);}
+  else cx.fillText(arcQ.question,360,41);
+  if(arcId==="race"){cx.font="44px sans-serif";cx.fillText("🚀",shipX,SY+6);}
+  ents.forEach(e=>{if(!e.gone&&!(e.d>0))drawEnt(e);});
+  if(trail.length>1){cx.lineCap="round";for(let i=1;i<trail.length;i++){cx.strokeStyle=`rgba(180,240,255,${1-trail[i].t*4})`;cx.lineWidth=7;cx.beginPath();cx.moveTo(trail[i-1].x,trail[i-1].y);cx.lineTo(trail[i].x,trail[i].y);cx.stroke();}}
+  parts.forEach(p=>{cx.globalAlpha=Math.max(0,p.l/.6);cx.fillStyle=p.c;cx.fillRect(p.x-3,p.y-3,6,6);});cx.globalAlpha=1;
+  pops.forEach(p=>{cx.globalAlpha=Math.min(1,p.t*2);cx.fillStyle=p.c;cx.font="800 24px 'Baloo 2',sans-serif";cx.fillText(p.txt,p.x,p.y);});cx.globalAlpha=1;
+  cx.restore();
+}
+function loop(t,k){
+  if(!arcRun||k!==arcTok)return;
+  const dt=Math.min(.05,(t-lastT)/1000);lastT=t;update(dt);
+  if(arcRun&&k===arcTok){draw();requestAnimationFrame(t2=>loop(t2,k));}
+}
+function finishArc(){
+  if(!arcRun)return;arcRun=false;const g=ARC.find(x=>x.id===arcId);
+  document.getElementById("finalScore").textContent=G.score;document.getElementById("finalScoreUnit").textContent="⭐ điểm";
+  document.getElementById("resultLine").innerHTML=`Bạn trả lời đúng <strong>${G.ok}</strong> lần, combo cao nhất x${G.best}.`;
+  const s=G.score;document.getElementById("resultBadge").textContent=g.icon+" "+g.name;
+  document.getElementById("resultMessage").textContent=s>=200?"🏆 Siêu phản xạ! Bạn là phi hành gia huyền thoại!":s>=120?"🚀 Rất tuyệt! Thử phá kỉ lục ở lượt sau nhé!":s>=60?"🌟 Khá lắm! Thêm một lượt nữa nào!":"🌱 Khởi động tốt rồi! Mỗi lượt chơi bạn sẽ nhanh hơn.";
+  showScreen("result");
+}
+
+</script>
+</body>
+</html>
